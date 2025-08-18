@@ -12,6 +12,10 @@ const Watch = () => {
     const url = searchParams.get('url');
     const title = searchParams.get('title');
     const year = searchParams.get('year');
+    const poster = searchParams.get('poster');
+    const backdrop = searchParams.get('backdrop');
+    const overview = searchParams.get('overview');
+    const genres = searchParams.get('genres');
 
     useEffect(() => {
         if (!url) {
@@ -25,34 +29,25 @@ const Watch = () => {
                 setLoading(true);
                 setError(null);
 
-                // In a real implementation, this would call your /embed?url= endpoint
-                // For now, we'll create a sanitized iframe directly
                 const decodedUrl = decodeURIComponent(url);
                 
-                // Basic URL validation
                 if (!decodedUrl.includes('vidsrc.xyz')) {
                     throw new Error('Invalid video source');
                 }
 
-                // Use the embed proxy to get ad-free content
-                const proxyUrl = `/embed?url=${encodeURIComponent(decodedUrl)}`;
+                // Call the embed proxy endpoint
+                const proxyUrl = `/api/embed?url=${encodeURIComponent(decodedUrl)}`;
+                const response = await fetch(proxyUrl);
                 
-                const sanitizedIframe = `
-                    <iframe 
-                        src="${proxyUrl}" 
-                        width="100%" 
-                        height="100%" 
-                        frameborder="0" 
-                        allowfullscreen
-                        sandbox="allow-scripts allow-same-origin allow-presentation"
-                        referrerpolicy="origin"
-                        title="Video Player"
-                    ></iframe>
-                `;
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
 
-                setEmbedHtml(sanitizedIframe);
+                const htmlContent = await response.text();
+                setEmbedHtml(htmlContent);
                 setLoading(false);
             } catch (err) {
+                console.error('Embed fetch error:', err);
                 setError(err.message || 'Failed to load video');
                 setLoading(false);
             }
@@ -65,73 +60,118 @@ const Watch = () => {
         navigate(-1);
     };
 
-    if (loading) {
-        return (
-            <div className="watch-page">
-                <div className="watch-header">
-                    <button className="back-button" onClick={handleGoBack} aria-label="Go back">
-                        <i className="bx bx-arrow-back"></i>
-                        Back
-                    </button>
-                    <div className="watch-title">
-                        <h1>{title || 'Loading...'}</h1>
-                        {year && <span className="year">({year})</span>}
-                    </div>
-                </div>
-                <div className="watch-container">
-                    <div className="loading-state">
-                        <div className="loading-spinner"></div>
-                        <p>Loading video player...</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    const handleRetry = () => {
+        window.location.reload();
+    };
 
-    if (error) {
-        return (
-            <div className="watch-page">
-                <div className="watch-header">
-                    <button className="back-button" onClick={handleGoBack} aria-label="Go back">
-                        <i className="bx bx-arrow-back"></i>
-                        Back
-                    </button>
-                    <div className="watch-title">
-                        <h1>{title || 'Error'}</h1>
-                        {year && <span className="year">({year})</span>}
-                    </div>
-                </div>
-                <div className="watch-container">
-                    <div className="error-state">
-                        <i className="bx bx-error-circle"></i>
-                        <h2>Unable to load video</h2>
-                        <p>{error}</p>
-                        <button className="retry-button" onClick={() => window.location.reload()}>
-                            Try Again
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    const genresList = genres ? JSON.parse(decodeURIComponent(genres)) : [];
 
     return (
         <div className="watch-page">
-            <div className="watch-header">
-                <button className="back-button" onClick={handleGoBack} aria-label="Go back">
-                    <i className="bx bx-arrow-back"></i>
-                    Back
-                </button>
-                <div className="watch-title">
-                    <h1>{title}</h1>
-                    {year && <span className="year">({year})</span>}
+            {/* Hero Section */}
+            <div 
+                className="watch-hero" 
+                style={{
+                    backgroundImage: backdrop ? `url(${backdrop})` : 'none'
+                }}
+            >
+                <div className="watch-hero__overlay">
+                    <div className="watch-hero__content container">
+                        <div className="watch-hero__poster">
+                            {poster && (
+                                <img src={poster} alt={title} />
+                            )}
+                        </div>
+                        <div className="watch-hero__info">
+                            <div className="watch-toolbar">
+                                <button 
+                                    className="back-button" 
+                                    onClick={handleGoBack} 
+                                    aria-label="Go back"
+                                >
+                                    <i className="bx bx-arrow-back"></i>
+                                    Back
+                                </button>
+                                <div className="watch-status">
+                                    <span>Playing</span>
+                                </div>
+                            </div>
+                            
+                            <h1 className="watch-title">
+                                {title}
+                                {year && <span className="year">({year})</span>}
+                            </h1>
+                            
+                            <div className="watch-genres">
+                                {genresList.map((genre, i) => (
+                                    <span key={i} className="genre-tag">{genre}</span>
+                                ))}
+                            </div>
+                            
+                            {overview && (
+                                <p className="watch-overview">{overview}</p>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div className="watch-container">
-                <div 
-                    className="video-embed" 
-                    dangerouslySetInnerHTML={{ __html: embedHtml }}
-                />
+
+            {/* Player Section */}
+            <div className="watch-player-section">
+                <div className="container">
+                    <div 
+                        className="watch-player" 
+                        role="region" 
+                        aria-label={`Video player for ${title}`}
+                    >
+                        {loading && (
+                            <div className="player-loading">
+                                <div className="loading-spinner"></div>
+                                <p>Loading player...</p>
+                            </div>
+                        )}
+
+                        {error && (
+                            <div className="player-error">
+                                <i className="bx bx-error-circle"></i>
+                                <h3>Unable to load video</h3>
+                                <p>{error}</p>
+                                <div className="error-actions">
+                                    <button className="retry-button" onClick={handleRetry}>
+                                        <i className="bx bx-refresh"></i>
+                                        Try Again
+                                    </button>
+                                    <button className="back-button-error" onClick={handleGoBack}>
+                                        <i className="bx bx-arrow-back"></i>
+                                        Go Back
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {!loading && !error && embedHtml && (
+                            <div 
+                                className="player-embed" 
+                                dangerouslySetInnerHTML={{ __html: embedHtml }}
+                            />
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Trailer Section */}
+            <div className="watch-extras">
+                <div className="container">
+                    <div className="extras-section">
+                        <h3>International Trailer</h3>
+                        <div className="trailer-placeholder">
+                            <div className="trailer-thumb">
+                                <i className="bx bx-play-circle"></i>
+                                <span>Trailer Available</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -8,6 +8,21 @@ module.exports = async (req, res) => {
     return res.status(400).send("Invalid or missing URL");
   }
 
+  // Basic rate limiting (simple in-memory approach)
+  const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  const now = Date.now();
+  const rateLimit = global.rateLimitMap || (global.rateLimitMap = new Map());
+  const clientRequests = rateLimit.get(clientIP) || [];
+  
+  // Remove requests older than 1 minute
+  const recentRequests = clientRequests.filter(time => now - time < 60000);
+  
+  if (recentRequests.length >= 10) {
+    return res.status(429).send("Rate limit exceeded. Please try again later.");
+  }
+  
+  recentRequests.push(now);
+  rateLimit.set(clientIP, recentRequests);
   try {
     const response = await axios.get(url, {
       headers: {
@@ -38,13 +53,16 @@ module.exports = async (req, res) => {
     }
 
     // Set secure iframe attributes
-    iframe.attr("sandbox", "allow-same-origin allow-scripts allow-presentation");
+    iframe.attr("sandbox", "allow-scripts allow-same-origin allow-presentation");
     iframe.attr("allowfullscreen", "true");
     iframe.attr("frameborder", "0");
+    iframe.attr("referrerpolicy", "no-referrer");
 
     res.setHeader("Content-Type", "text/html");
     res.setHeader("X-Frame-Options", "SAMEORIGIN");
-    res.setHeader("Content-Security-Policy", "frame-ancestors 'self'");
+    res.setHeader("Content-Security-Policy", "frame-ancestors 'self'; default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'");
+    res.setHeader("Referrer-Policy", "no-referrer");
+    res.setHeader("X-Content-Type-Options", "nosniff");
     
     res.send(`
       <!DOCTYPE html>

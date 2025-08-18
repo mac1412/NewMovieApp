@@ -29,9 +29,18 @@ const Detail = () => {
                 ? `https://vidsrc.xyz/embed/movie/${id}`
                 : `https://vidsrc.xyz/embed/tv/${id}`;
             
-            // Navigate to watch page with encoded URL
-            const encodedUrl = encodeURIComponent(vidsrcUrl);
-            navigate(`/watch?url=${encodedUrl}&title=${encodeURIComponent(movieTitle)}&year=${releaseYear}`);
+            // Navigate to watch page with all necessary data
+            const params = new URLSearchParams({
+                url: encodeURIComponent(vidsrcUrl),
+                title: encodeURIComponent(movieTitle),
+                year: releaseYear,
+                poster: apiConfig.w500Image(item.poster_path),
+                backdrop: apiConfig.originalImage(item.backdrop_path || item.poster_path),
+                overview: encodeURIComponent(item.overview || ''),
+                genres: encodeURIComponent(JSON.stringify(item.genres?.map(g => g.name) || []))
+            });
+            
+            navigate(`/watch?${params.toString()}`);
         }
     };
 
@@ -64,14 +73,14 @@ const Detail = () => {
                                             <span key={i} className="genres__item">{genre.name}</span>
                                         ))
                                     }
-                                    <Button 
-                                        className="play-button" 
+                                    <button 
+                                        className="btn play-button" 
                                         onClick={handlePlayClick}
                                         aria-label={`Play ${item.title || item.name}`}
                                     >
                                         <i className="bx bx-play"></i>
                                         Play
-                                    </Button>
+                                    </button>
                                 </div>
                                 <p className="overview">{item.overview}</p>
                                 <div className="cast">

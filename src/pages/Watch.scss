@@ -4,164 +4,355 @@
     min-height: 100vh;
     background-color: $body-bg;
     padding-top: $header-height;
+}
 
-    .watch-header {
-        @include flex(center, space-between);
-        padding: 1rem 2rem;
-        background-color: rgba($black, 0.8);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid rgba($white, 0.1);
+.watch-hero {
+    position: relative;
+    min-height: 60vh;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    &__overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            135deg,
+            rgba($black, 0.8) 0%,
+            rgba($black, 0.6) 50%,
+            rgba($black, 0.9) 100%
+        );
+    }
+
+    &__content {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        min-height: 60vh;
+        @include flex(flex-end, flex-start);
+        padding: 2rem;
+        gap: 3rem;
 
         @include mobile {
             flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-
-        .back-button {
-            @include flex(center, center);
-            background: transparent;
-            border: 2px solid $white;
-            color: $white;
-            padding: 0.5rem 1rem;
-            border-radius: $border-radius;
-            cursor: pointer;
-            font-family: $font-family;
-            font-weight: 600;
-            transition: all 0.3s ease;
-
-            i {
-                margin-right: 0.5rem;
-                font-size: 1.2rem;
-            }
-
-            &:hover {
-                background-color: $white;
-                color: $black;
-                transform: translateY(-2px);
-            }
-
-            &:focus {
-                outline: 2px solid $main-color;
-                outline-offset: 2px;
-            }
-        }
-
-        .watch-title {
-            @include flex(center, flex-end);
-            text-align: right;
-
-            @include mobile {
-                align-self: stretch;
-                justify-content: flex-start;
-                text-align: left;
-            }
-
-            h1 {
-                font-size: 1.8rem;
-                font-weight: 700;
-                margin: 0;
-
-                @include mobile {
-                    font-size: 1.4rem;
-                }
-            }
-
-            .year {
-                margin-left: 0.5rem;
-                font-size: 1.2rem;
-                color: rgba($white, 0.7);
-                font-weight: 400;
-            }
+            align-items: center;
+            text-align: center;
+            gap: 2rem;
+            padding: 1rem;
         }
     }
 
-    .watch-container {
-        position: relative;
-        width: 100%;
-        height: calc(100vh - $header-height - 80px);
-        background-color: $black;
+    &__poster {
+        flex-shrink: 0;
+        width: 300px;
 
-        .video-embed {
+        @include mobile {
+            width: 200px;
+        }
+
+        img {
             width: 100%;
-            height: 100%;
+            border-radius: $border-radius;
+            box-shadow: 0 20px 40px rgba($black, 0.5);
+        }
+    }
 
-            iframe {
-                width: 100%;
-                height: 100%;
-                border: none;
-            }
+    &__info {
+        flex: 1;
+        max-width: 600px;
+
+        @include mobile {
+            max-width: 100%;
+        }
+    }
+}
+
+.watch-toolbar {
+    @include flex(center, space-between);
+    margin-bottom: 2rem;
+
+    @include mobile {
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .back-button {
+        @include flex(center, center);
+        background: rgba($white, 0.1);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba($white, 0.3);
+        color: $white;
+        padding: 0.75rem 1.5rem;
+        border-radius: $border-radius;
+        cursor: pointer;
+        font-family: $font-family;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+
+        i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
         }
 
-        .loading-state {
-            @include flex(center, center);
-            flex-direction: column;
-            height: 100%;
-            color: $white;
-
-            .loading-spinner {
-                width: 50px;
-                height: 50px;
-                border: 3px solid rgba($main-color, 0.3);
-                border-top: 3px solid $main-color;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-                margin-bottom: 1rem;
-            }
-
-            p {
-                font-size: 1.2rem;
-                color: rgba($white, 0.8);
-            }
+        &:hover {
+            background: rgba($white, 0.2);
+            border-color: rgba($white, 0.5);
+            transform: translateY(-2px);
         }
 
-        .error-state {
+        &:focus {
+            outline: 2px solid $main-color;
+            outline-offset: 2px;
+        }
+    }
+
+    .watch-status {
+        @include flex(center, center);
+        background: rgba($main-color, 0.2);
+        border: 1px solid $main-color;
+        color: $main-color;
+        padding: 0.5rem 1rem;
+        border-radius: $border-radius;
+        font-weight: 600;
+        font-size: 0.9rem;
+
+        @include mobile {
+            display: none;
+        }
+    }
+}
+
+.watch-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: $white;
+
+    @include tablet {
+        font-size: 2.5rem;
+    }
+
+    @include mobile {
+        font-size: 2rem;
+    }
+
+    .year {
+        font-weight: 400;
+        color: rgba($white, 0.7);
+        margin-left: 0.5rem;
+    }
+}
+
+.watch-genres {
+    @include flex(center, flex-start);
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+
+    @include mobile {
+        justify-content: center;
+    }
+
+    .genre-tag {
+        padding: 0.5rem 1rem;
+        background: rgba($white, 0.1);
+        border: 1px solid rgba($white, 0.3);
+        border-radius: $border-radius;
+        color: $white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: rgba($white, 0.2);
+            border-color: rgba($white, 0.5);
+        }
+    }
+}
+
+.watch-overview {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: rgba($white, 0.9);
+    margin-bottom: 0;
+
+    @include mobile {
+        font-size: 1rem;
+    }
+}
+
+.watch-player-section {
+    background-color: $black;
+    padding: 2rem 0;
+}
+
+.watch-player {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background-color: $black;
+    border-radius: $border-radius;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba($black, 0.3);
+
+    .player-loading {
+        @include flex(center, center);
+        flex-direction: column;
+        height: 100%;
+        color: $white;
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba($main-color, 0.3);
+            border-top: 4px solid $main-color;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: rgba($white, 0.8);
+            font-weight: 500;
+        }
+    }
+
+    .player-error {
+        @include flex(center, center);
+        flex-direction: column;
+        height: 100%;
+        color: $white;
+        text-align: center;
+        padding: 3rem;
+
+        i {
+            font-size: 5rem;
+            color: $main-color;
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: rgba($white, 0.8);
+            margin-bottom: 2rem;
+            max-width: 400px;
+        }
+
+        .error-actions {
             @include flex(center, center);
-            flex-direction: column;
-            height: 100%;
-            color: $white;
-            text-align: center;
-            padding: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
 
-            i {
-                font-size: 4rem;
-                color: $main-color;
-                margin-bottom: 1rem;
-            }
-
-            h2 {
-                font-size: 2rem;
-                margin-bottom: 1rem;
-                font-weight: 600;
-            }
-
-            p {
-                font-size: 1.1rem;
-                color: rgba($white, 0.8);
-                margin-bottom: 2rem;
-                max-width: 400px;
-            }
-
-            .retry-button {
-                background-color: $main-color;
-                color: $white;
-                border: none;
-                padding: 0.8rem 2rem;
+            button {
+                @include flex(center, center);
+                padding: 0.75rem 1.5rem;
                 border-radius: $border-radius;
                 font-family: $font-family;
                 font-weight: 600;
                 font-size: 1rem;
                 cursor: pointer;
                 transition: all 0.3s ease;
+                border: 2px solid transparent;
 
-                &:hover {
-                    background-color: darken($main-color, 10%);
-                    transform: translateY(-2px);
+                i {
+                    margin-right: 0.5rem;
+                    font-size: 1.2rem;
                 }
 
                 &:focus {
                     outline: 2px solid $white;
                     outline-offset: 2px;
+                }
+            }
+
+            .retry-button {
+                background-color: $main-color;
+                color: $white;
+                border-color: $main-color;
+
+                &:hover {
+                    background-color: darken($main-color, 10%);
+                    transform: translateY(-2px);
+                }
+            }
+
+            .back-button-error {
+                background-color: transparent;
+                color: $white;
+                border-color: $white;
+
+                &:hover {
+                    background-color: $white;
+                    color: $black;
+                    transform: translateY(-2px);
+                }
+            }
+        }
+    }
+
+    .player-embed {
+        width: 100%;
+        height: 100%;
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    }
+}
+
+.watch-extras {
+    padding: 3rem 0;
+    background-color: $body-bg;
+
+    .extras-section {
+        h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: $white;
+        }
+
+        .trailer-placeholder {
+            .trailer-thumb {
+                @include flex(center, center);
+                flex-direction: column;
+                background: rgba($white, 0.05);
+                border: 2px dashed rgba($white, 0.2);
+                border-radius: $border-radius;
+                padding: 2rem;
+                color: rgba($white, 0.6);
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background: rgba($white, 0.1);
+                    border-color: rgba($white, 0.3);
+                    color: rgba($white, 0.8);
+                }
+
+                i {
+                    font-size: 3rem;
+                    margin-bottom: 1rem;
+                    color: $main-color;
+                }
+
+                span {
+                    font-size: 1.1rem;
+                    font-weight: 500;
                 }
             }
         }
@@ -171,4 +362,13 @@
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+// Security and Performance Enhancements
+.watch-player iframe {
+    // Enhanced sandboxing
+    sandbox: allow-scripts allow-same-origin allow-presentation;
+    // Prevent referrer leakage
+    referrerpolicy: no-referrer;
+    // Additional security headers will be handled server-side
 }
