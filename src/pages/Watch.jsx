@@ -117,45 +117,6 @@ const Watch = () => {
             </div>
 
             {/* Player Section */}
-            <div className="watch-player-section">
-                <div className="container">
-                    <div 
-                        className="watch-player" 
-                        role="region" 
-                        aria-label={`Video player for ${title}`}
-                    >
-                        {loading && (
-                            <div className="player-loading">
-                                <div className="loading-spinner"></div>
-                                <p>Loading player...</p>
-                            </div>
-                        )}
-
-                        {error && (
-                            <div className="player-error">
-                                <i className="bx bx-error-circle"></i>
-                                <h3>Unable to load video</h3>
-                                <p>{error}</p>
-                                <div className="error-actions">
-                                    <button className="retry-button" onClick={handleRetry}>
-                                        <i className="bx bx-refresh"></i>
-                                        Try Again
-                                    </button>
-                                    <button className="back-button-error" onClick={handleGoBack}>
-                                        <i className="bx bx-arrow-back"></i>
-                                        Go Back
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-
-                        {!loading && !error && embedHtml && (
-                            <div 
-                                className="player-embed" 
-                                dangerouslySetInnerHTML={{ __html: embedHtml }}
-                            />
-                        )}
-                    </div>
                 </div>
             </div>
 
