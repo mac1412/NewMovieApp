@@ -40,14 +40,21 @@ const MovieLandingPage = ({ tmdbApiKey, tmdbId = 385687, proxyUrl }) => {
       });
 
       // Use proxy if provided, otherwise direct URL
-      const finalUrl = proxyUrl 
-        ? `${proxyUrl}/api/embed?url=${encodeURIComponent(vidsrcUrl)}`
-        : vidsrcUrl;
+      let finalUrl;
+      if (proxyUrl) {
+        finalUrl = `${proxyUrl}/api/embed?url=${encodeURIComponent(vidsrcUrl)}`;
+      } else {
+        finalUrl = vidsrcUrl;
+      }
+
+      console.log('VidSrc URL:', vidsrcUrl);
+      console.log('Final URL:', finalUrl);
 
       setIframeSrc(finalUrl);
       setIsPlaying(true);
     } catch (error) {
       console.error('Error loading video:', error);
+      alert('Error loading video: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -83,9 +90,9 @@ const MovieLandingPage = ({ tmdbApiKey, tmdbId = 385687, proxyUrl }) => {
           <span className="text-xl font-bold">tMovies</span>
         </div>
         <div className="hidden md:flex space-x-8">
-          <a href="#" className="text-white hover:text-red-400 transition-colors">Home</a>
-          <a href="#" className="text-white hover:text-red-400 transition-colors">Movies</a>
-          <a href="#" className="text-white hover:text-red-400 transition-colors">TV Series</a>
+          <button className="text-white hover:text-red-400 transition-colors">Home</button>
+          <button className="text-white hover:text-red-400 transition-colors">Movies</button>
+          <button className="text-white hover:text-red-400 transition-colors">TV Series</button>
         </div>
       </nav>
 
