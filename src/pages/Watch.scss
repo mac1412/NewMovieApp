@@ -363,12 +363,3 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
-// Security and Performance Enhancements
-.watch-player iframe {
-    // Enhanced sandboxing
-    sandbox: allow-scripts allow-same-origin allow-presentation;
-    // Prevent referrer leakage
-    referrerpolicy: no-referrer;
-    // Additional security headers will be handled server-side
-}

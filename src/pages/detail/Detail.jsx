@@ -7,7 +7,6 @@ import apiConfig from '../../api/apiConfig';
 import './detail.scss';
 import CastList from './CastList';
 import VideoList from './VideoList';
-import Button from '../../components/button/Button';
 
 import MovieList from '../../components/movie-list/MovieList';
 
